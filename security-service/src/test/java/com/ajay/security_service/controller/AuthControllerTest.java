@@ -26,7 +26,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-class AuthControllerTest {
+public class AuthControllerTest {
 
     @InjectMocks
     private AuthenticationController authController;
@@ -46,7 +46,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testAddNewUser_Success() {
+    public void testAddNewUser_Success() {
         UserCredential userCredential = new UserCredential();
 
         when(bindingResult.hasErrors()).thenReturn(false);
@@ -80,7 +80,7 @@ class AuthControllerTest {
 
 
     @Test
-    void testGenerateUser_InvalidCredentials() {
+    public void testGenerateUser_InvalidCredentials() {
         AuthenticationRequest authRequest = new AuthenticationRequest("username", "wrongPassword");
 
         when(authenticationManager.authenticate(any())).thenThrow(new InvalidUserException("Invalid User Credentials"));
@@ -93,7 +93,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testValidateToken_Valid() {
+    public void testValidateToken_Valid() {
         String token = "validToken";
 
         doNothing().when(authService).validateToken(token);
@@ -103,7 +103,7 @@ class AuthControllerTest {
     }
 
     @Test
-    void testValidateToken_Invalid() {
+    public void testValidateToken_Invalid() {
         String token = "invalidToken";
 
         doThrow(new InvalidTokenException("Invalid Token")).when(authService).validateToken(token);
@@ -134,7 +134,7 @@ class AuthControllerTest {
 
 
     @Test
-    void testGenerateUser_InvalidAuthentication() {
+    public void testGenerateUser_InvalidAuthentication() {
 
         AuthenticationRequest authRequest = new AuthenticationRequest("user", "wrongpassword");
 
@@ -148,7 +148,7 @@ class AuthControllerTest {
         assertEquals("INVALID_CREDENTIALS", exception.getMessage());
     }
     @Test
-    void testGenerateUser_UnexpectedException() {
+    public void testGenerateUser_UnexpectedException() {
         AuthenticationRequest authRequest = new AuthenticationRequest("username", "password");
         when(authenticationManager.authenticate(any())).thenThrow(new RuntimeException("Unexpected error"));
 
@@ -161,7 +161,7 @@ class AuthControllerTest {
 
 
     @Test
-    public void testGenerateUser_Success() {
+   public  void testGenerateUser_Success() {
    
         String username = "testUser";
         String password = "testPassword";

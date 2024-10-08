@@ -1,6 +1,7 @@
 package com.ajay.security_service.service;
 
 import com.ajay.security_service.entity.UserCredential;
+import com.ajay.security_service.exception.EmailExistsException;
 import com.ajay.security_service.exception.UsernameExistsException;
 import com.ajay.security_service.repository.UserCredentialRepository;
 import com.ajay.security_service.utils.JwtService;
@@ -37,14 +38,15 @@ public class AuthServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-
     @Test
     public void testSaveUser_Success() {
         UserCredential userCredential = new UserCredential();
         userCredential.setName("testUser");
+        userCredential.setEmail("test@example.com");
         userCredential.setPassword("plainPassword");
 
         when(repository.findByName(userCredential.getName())).thenReturn(Optional.empty());
+        when(repository.existsByEmail(userCredential.getEmail())).thenReturn(false);
         when(passwordEncoder.encode(userCredential.getPassword())).thenReturn("encodedPassword");
 
         String response = authService.saveUser(userCredential);
@@ -61,20 +63,33 @@ public class AuthServiceTest {
         userCredential.setName("existingUser");
         userCredential.setPassword("plainPassword");
 
-
         when(repository.findByName(userCredential.getName())).thenReturn(Optional.of(new UserCredential()));
-
 
         UsernameExistsException exception = assertThrows(UsernameExistsException.class, () -> {
             authService.saveUser(userCredential);
         });
 
-        assertEquals("USER ALREADY EXISTS,TRY WITH OTHER USERNAME", exception.getMessage());
-
-
+        assertEquals(Constant.USER_EXISTS, exception.getMessage());
         verify(repository, never()).save(userCredential);
     }
 
+    @Test
+    public void testSaveUser_EmailExists() {
+        UserCredential userCredential = new UserCredential();
+        userCredential.setName("newUser");
+        userCredential.setEmail("existing@example.com");
+        userCredential.setPassword("plainPassword");
+
+        when(repository.findByName(userCredential.getName())).thenReturn(Optional.empty());
+        when(repository.existsByEmail(userCredential.getEmail())).thenReturn(true);
+
+        EmailExistsException exception = assertThrows(EmailExistsException.class, () -> {
+            authService.saveUser(userCredential);
+        });
+
+        assertEquals(Constant.EMAIL_EXISTS, exception.getMessage());
+        verify(repository, never()).save(userCredential);
+    }
 
     @Test
     public void testGenerateToken() {

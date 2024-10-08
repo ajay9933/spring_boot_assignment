@@ -36,7 +36,7 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testFindAllBooks() {
+   public void testFindAllBooks() {
         List<Book> books = Arrays.asList(book);
         when(bookRepository.findAll()).thenReturn(books);
 
@@ -47,7 +47,7 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testFindBookById_Success() {
+   public  void testFindBookById_Success() {
         when(bookRepository.findById(1)).thenReturn(Optional.of(book));
 
         Book result = bookService.findById(1);
